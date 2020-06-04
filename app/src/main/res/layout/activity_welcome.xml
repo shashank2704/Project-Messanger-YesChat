@@ -15,7 +15,7 @@
         android:textColor="@android:color/white"
         android:textSize="35sp"
         android:textStyle="bold"
-        android:text="Welcome Sir/Madam">
+        android:text="Welcome User">
     </TextView>
 
     <Button

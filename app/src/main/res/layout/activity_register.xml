@@ -29,6 +29,7 @@
         android:orientation="vertical"
         android:layout_centerInParent="true">
 
+
         <EditText
             android:id="@+id/username_register"
             android:layout_width="match_parent"
