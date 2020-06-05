@@ -17,6 +17,7 @@ import java.sql.DatabaseMetaData
 class RegisterActivity : AppCompatActivity()
 {
     private  lateinit var mAuth:FirebaseAuth
+    private lateinit var refUsers:DatabaseReference
     private var firebaseUserID:String=""
 
 
@@ -66,13 +67,22 @@ class RegisterActivity : AppCompatActivity()
                 if(task.isSuccessful)
                 {
                     Log.d("RegisterActivity","Successfull Auth")
-                    firebaseUserID=mAuth.currentUser!!.uid
-                     val refUsers= FirebaseDatabase.getInstance().getReference("/Users/$firebaseUserID")
+                     firebaseUserID=mAuth.currentUser!!.uid
+                     refUsers= FirebaseDatabase.getInstance().getReference("/Users/$firebaseUserID")
 
-                    val user=User(firebaseUserID,username_register.text.toString())
+                    val userHashMap= HashMap<String,Any>()
+                    userHashMap["uid"]=firebaseUserID
+                    userHashMap["username"]=username
+                    userHashMap["profile"]="https://firebasestorage.googleapis.com/v0/b/messangerapp-8602d.appspot.com/o/profile.png?alt=media&token=f96f755d-62fb-4911-b1f6-fa77060a9cd0"
+                    userHashMap["cover"]="https://firebasestorage.googleapis.com/v0/b/messangerapp-8602d.appspot.com/o/cover.png?alt=media&token=f9c09483-d088-4fa9-a8e8-79b12784746d"
+                    userHashMap["status"]="offline"
+                    userHashMap["search"]=username.toLowerCase()
+                    userHashMap["facebook"]="https://m.facebook.com"
+                    userHashMap["Instagram"]="https://m.instagram.com"
+                    userHashMap["Google"]="https://www.google.com"
 
-                    refUsers.setValue(user)
-                            .addOnCompleteListener {
+
+                    refUsers.updateChildren(userHashMap).addOnCompleteListener {
                         task ->
                         if(task.isSuccessful)
                         {
@@ -88,22 +98,6 @@ class RegisterActivity : AppCompatActivity()
                                 Log.d("RegisterActivity","Failed Reg ${it.message}")
                             }
 
-
-
-                  /*  val userHashMap= HashMap<String,Any>()
-                    userHashMap["uid"]=firebaseUserID
-                    userHashMap["username"]=username
-                    userHashMap["profile"]="https://firebasestorage.googleapis.com/v0/b/messangerapp-8602d.appspot.com/o/profile.png?alt=media&token=f96f755d-62fb-4911-b1f6-fa77060a9cd0"
-                    userHashMap["cover"]="https://firebasestorage.googleapis.com/v0/b/messangerapp-8602d.appspot.com/o/cover.png?alt=media&token=f9c09483-d088-4fa9-a8e8-79b12784746d"
-                    userHashMap["status"]="offline"
-                    userHashMap["search"]=username.toLowerCase()
-                    userHashMap["facebook"]="https://www.facebook.com"
-                    userHashMap["Instagram"]="https://www.instagram.com"
-                    userHashMap["Google"]="https://www.google.com"*/
-
-
-                    //refUsers.updateChildren(userHashMap)
-
                 }
                 else
                 {
@@ -115,6 +109,3 @@ class RegisterActivity : AppCompatActivity()
     }
 }
 
-class User(val uid: String,val Username:String,val status: String = "Offline"){
-    constructor(): this("","")
-}
