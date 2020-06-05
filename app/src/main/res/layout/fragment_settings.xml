@@ -11,7 +11,7 @@
         android:id="@+id/cv1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="20dp"
         >
 
         <RelativeLayout
@@ -65,9 +65,9 @@
         android:layout_below="@+id/cv1"
         android:gravity="center"
         android:background="@color/colorProfile"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="60dp"
         android:orientation="horizontal"
-        android:padding="6dp"
+        android:padding="12dp"
         >
 
         <ImageView
