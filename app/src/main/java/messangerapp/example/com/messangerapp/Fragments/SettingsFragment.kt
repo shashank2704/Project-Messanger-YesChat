@@ -1,7 +1,9 @@
 package messangerapp.example.com.messangerapp.Fragments
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.app.ProgressDialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -9,12 +11,17 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.Toast
+import com.google.android.gms.tasks.Continuation
+import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
+import com.google.firebase.storage.StorageTask
+import com.google.firebase.storage.UploadTask
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.fragment_settings.view.*
 import messangerapp.example.com.messangerapp.ModelClasses.Users
@@ -27,6 +34,8 @@ class SettingsFragment : Fragment()
     private val RequestCode= 438
     private  var imageUri: Uri?=null
     private var storageRef:StorageReference?=null
+    private var coverChecker:String?=""
+    private var socialChecker:String?=""
 
 
 
@@ -65,13 +74,96 @@ class SettingsFragment : Fragment()
         }
 
         view.cover_image_settings.setOnClickListener {
+            coverChecker = "cover"
             pickImage()
         }
+        view.set_facebook.setOnClickListener {
+            socialChecker="facebbok"
+            setSocialLinks()
+        }
+        view.set_instagram.setOnClickListener {
+            socialChecker="instagram"
+            setSocialLinks()
+        }
+        view.set_google.setOnClickListener {
+            socialChecker="google"
+            setSocialLinks()
+        }
+
 
         return view
     }
 
+    private fun setSocialLinks() {
+        val builder: AlertDialog.Builder=
+                AlertDialog.Builder(context!!, R.style.Theme_AppCompat_DayNight_Dialog_Alert)
 
+        if(socialChecker=="google")
+        {
+            builder.setTitle("Write URL:")
+        }
+        else
+        {
+            builder.setTitle("Write Username:")
+        }
+        val editText=EditText(context)
+        if(socialChecker=="google")
+        {
+            editText.hint="e.g www.google.com"
+        }
+        else
+        {
+            editText.hint="e.g shashank2704"
+        }
+        builder.setView(editText)
+        builder.setPositiveButton("Create",DialogInterface.OnClickListener{
+            dialog, which ->
+            val str=editText.text.toString()
+            if(str=="")
+            {
+                Toast.makeText(context,"Please Write Something....",Toast.LENGTH_LONG).show()
+            }
+            else
+            {
+                saveSocialink(str)
+            }
+        })
+        builder.setNegativeButton("Cancel",DialogInterface.OnClickListener{
+            dialog, which ->
+            dialog.cancel()
+        })
+        builder.show()
+
+    }
+
+    private fun saveSocialink(str: String) {
+        val mapsocial=HashMap<String,Any>()
+
+
+        when(socialChecker)
+        {
+            "facebook" ->
+            {
+                 mapsocial["facebook"]=="https://www.facebook.com/$str"
+            }
+            "instagram" ->
+            {
+                mapsocial["instagram"]=="https://www.instagram.com/$str"
+            }
+            "google" ->
+            {
+                mapsocial["google"]=="https://$str"
+            }
+        }
+
+        usersRefernce!!.updateChildren(mapsocial).addOnCompleteListener {
+            task->
+            if(task.isSuccessful)
+            {
+                Toast.makeText(context,"Updated Successfully.",Toast.LENGTH_LONG).show()
+            }
+        }
+    }
 
 
     private fun pickImage() {
@@ -100,7 +192,46 @@ class SettingsFragment : Fragment()
 
         if(imageUri!=null)
         {
-            val
+            val fileRef=storageRef!!.child(System.currentTimeMillis().toString() + ".jpg")
+            var uploadTask:StorageTask<*>
+            uploadTask=fileRef.putFile(imageUri!!)
+            uploadTask.continueWithTask(Continuation<UploadTask.TaskSnapshot, Task<Uri>>{ task ->
+                if(task.isSuccessful)
+                {
+                    task.exception?.let {
+                        throw it
+                    }
+
+
+                }
+                return@Continuation fileRef.downloadUrl
+
+            }).addOnCompleteListener { task ->
+                if (task.isSuccessful)
+                {
+                    val downloadUrl= task.result
+                    val url=downloadUrl.toString()
+
+
+                    if(coverChecker == "cover")
+                    {
+                        val mapCoverImg=HashMap<String,Any>()
+                        mapCoverImg["cover"]==url
+                        usersRefernce!!.updateChildren(mapCoverImg)
+                        coverChecker=""
+
+                    }
+                    else
+                    {
+                        val mapProfileImg=HashMap<String,Any>()
+                        mapProfileImg["profile"]==url
+                        usersRefernce!!.updateChildren(mapProfileImg)
+                        coverChecker=""
+                    }
+                    progressBar.dismiss()
+                }
+            }
+
         }
     }
 
