@@ -1,6 +1,10 @@
 package messangerapp.example.com.messangerapp.AdapterClasses
 
+import android.app.AlertDialog
+import android.app.Dialog
 import android.content.Context
+import android.content.DialogInterface
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,6 +13,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 import de.hdodenhof.circleimageview.CircleImageView
 import messangerapp.example.com.messangerapp.AdapterClasses.UserAdapter.*
+import messangerapp.example.com.messangerapp.MainActivity
+import messangerapp.example.com.messangerapp.MessageChatActivity
 import messangerapp.example.com.messangerapp.ModelClasses.Users
 import messangerapp.example.com.messangerapp.R
 
@@ -36,6 +42,28 @@ class UserAdapter(mContext:Context,mUsers: List<Users>,isChatCheck:Boolean) : Re
         val user:Users?=mUsers[i]
         holder.userNameTxt.text=user!!.getUserName()
         Picasso.get().load(user.getProfile()).placeholder(R.drawable.profile).into(holder.profileImageView)
+        holder.itemView.setOnClickListener {
+            val options= arrayOf<CharSequence>(
+                    "Send Message",
+                    "Visit Profile"
+            )
+            val builder: AlertDialog.Builder=AlertDialog.Builder(mContext)
+            builder.setTitle("What do you want?")
+            builder.setItems(options,DialogInterface.OnClickListener { dialog, position ->
+                if(position==0)
+                {
+                    val intent= Intent(mContext, MessageChatActivity::class.java)
+                    intent.putExtra("visit_id",user.getUID())
+                    mContext.startActivity(intent)
+                }
+                if(position==1)
+                {
+
+                }
+            })
+
+            builder.show()
+        }
 
     }
 
