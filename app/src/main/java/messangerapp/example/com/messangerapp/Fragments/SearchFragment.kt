@@ -106,7 +106,7 @@ class SearchFragment : Fragment() {
                         (mUsers as ArrayList<Users>).add(user)
                     }
                 }
-                userAdapter=UserAdapter(context!!,mUsers!!,false)
+                userAdapter=UserAdapter(context!!,mUsers!!,true)
                 recyclerView!!.adapter = userAdapter
             }
 
