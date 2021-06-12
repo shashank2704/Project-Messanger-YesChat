@@ -26,8 +26,8 @@ import messangerapp.example.com.messangerapp.Fragments.SettingsFragment
 import messangerapp.example.com.messangerapp.ModelClasses.Users
 
 class MainActivity : AppCompatActivity() {
-    
-    
+
+
     var refUsers:DatabaseReference? = null
     var firebaseUser:FirebaseUser? = null
 
