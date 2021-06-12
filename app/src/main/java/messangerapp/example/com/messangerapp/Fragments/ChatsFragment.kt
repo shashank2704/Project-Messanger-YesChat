@@ -20,7 +20,7 @@ import messangerapp.example.com.messangerapp.R
 
 
 class ChatsFragment : Fragment() {
-    
+
     private  var userAdapter: UserAdapter? = null
     private  var mUsers: List<Users>? = null
     private var usersChatList: List<Chatlist>? = null
@@ -34,11 +34,11 @@ class ChatsFragment : Fragment() {
         recycler_view_chatlist=view.findViewById(R.id.recycler_view_chatlist)
         recycler_view_chatlist.setHasFixedSize(true)
         recycler_view_chatlist.layoutManager=LinearLayoutManager(context)
-        
+
         firebaseUser =FirebaseAuth.getInstance().currentUser
-        
+
         usersChatList= ArrayList()
-        
+
         val ref= FirebaseDatabase.getInstance().reference.child("ChatList").child(firebaseUser!!.uid)
         ref!!.addValueEventListener(object :ValueEventListener{
             override fun onDataChange(p0: DataSnapshot) {
@@ -49,16 +49,16 @@ class ChatsFragment : Fragment() {
                     (usersChatList as ArrayList).add(chatlist!!)
                 }
                 retrieveChatLists()
-                
+
             }
 
             override fun onCancelled(p0: DatabaseError) {
-                
+
             }
         })
         return view
     }
-    
+
     private fun retrieveChatLists(){
         mUsers = ArrayList()
         val ref = FirebaseDatabase.getInstance().reference.child("Users")
@@ -68,26 +68,26 @@ class ChatsFragment : Fragment() {
                 for(datasnapshot in p0.children)
                 {
                     val user=datasnapshot.getValue(Users::class.java)
-                    
+
                     for(eachChatList in usersChatList!!)
                     {
                         if(user!!.getUID().equals(eachChatList.getId()))
                         {
                             (mUsers as ArrayList).add(user!!)
                         }
-                        
+
                     }
                 }
                 userAdapter = UserAdapter(context!!,(mUsers as ArrayList<Users>),true)
                 recycler_view_chatlist.adapter = userAdapter
-                
-                
+
+
             }
 
             override fun onCancelled(p0: DatabaseError) {
-                
+
             }
-            
+
         })
     }
 
